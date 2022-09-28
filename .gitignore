@@ -1,0 +1,14 @@
+
+# python cache
+**/__pycache__/
+
+# config & workdir
+# always created with default values on first boot
+config/
+work/
+
+# auto-generated html file
+output.html
+
+# log files
+app.log*
