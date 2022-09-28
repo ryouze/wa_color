@@ -5,10 +5,10 @@ Example usage:
 >>> f = File(reset=False)
 >>> f.plan = {"iteration": 20}
 """
-from pathlib import Path
 import logging
+from pathlib import Path
 
-from .private._utils import Directory, Json, SaveByType, LoadByType
+from .private._utils import Directory, Json, LoadByType, SaveByType
 
 # setup per-module logger
 log = logging.getLogger(__name__).addHandler(logging.NullHandler())

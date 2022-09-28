@@ -2,10 +2,11 @@
 """
 Download and process webpages: lesson plan, class cancellations.
 """
-from bs4 import BeautifulSoup
-from requests import HTTPError, Session
 import logging
 import re
+
+from bs4 import BeautifulSoup
+from requests import HTTPError, Session
 
 from . import _convert as convert
 

@@ -2,8 +2,9 @@
 """
 Convert a Response object to another type: soup.
 """
-from bs4 import BeautifulSoup
 import logging
+
+from bs4 import BeautifulSoup
 
 # setup per-module logger
 log = logging.getLogger(__name__).addHandler(logging.NullHandler())

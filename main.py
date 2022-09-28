@@ -2,9 +2,9 @@
 """
 Main entry: setup rotating logger and run app.
 """
-from logging.handlers import RotatingFileHandler
 import logging
 import sys
+from logging.handlers import RotatingFileHandler
 
 from wa_color.main import App, Debug
 

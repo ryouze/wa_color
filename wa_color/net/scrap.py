@@ -2,10 +2,10 @@
 """
 Compare changes in lesson plan and class cancellations.
 """
-from time import localtime, strftime
 import logging
+from time import localtime, strftime
 
-from .private._download import DownloadPlan, DownloadCancel
+from .private._download import DownloadCancel, DownloadPlan
 
 # setup per-module logger
 log = logging.getLogger(__name__).addHandler(logging.NullHandler())

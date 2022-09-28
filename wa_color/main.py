@@ -2,15 +2,16 @@
 """
 Setup App and Debug class for importing within main.py at root.
 """
-from random import randint
-from requests.exceptions import ConnectionError, HTTPError, Timeout
-from time import sleep
 import logging
+from random import randint
+from time import sleep
+
+from requests.exceptions import ConnectionError, HTTPError, Timeout
 
 from .communication.mail import Mail
 from .disk.file import FileManager
 from .disk.html import HtmlManager
-from .net.scrap import Plan, Cancel
+from .net.scrap import Cancel, Plan
 
 # setup per-module logger
 log = logging.getLogger(__name__).addHandler(logging.NullHandler())

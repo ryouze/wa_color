@@ -2,9 +2,9 @@
 """
 Extra tools for input and output.
 """
+import logging
 from json import dump, load
 from shutil import rmtree
-import logging
 
 from . import _templates
 

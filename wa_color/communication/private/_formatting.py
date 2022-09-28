@@ -2,8 +2,8 @@
 """
 Format an e-mail in the RFC 2822 - Internet Message Format format.
 """
-from platform import system, python_version
 import logging
+from platform import python_version, system
 
 # setup per-module logger
 log = logging.getLogger(__name__).addHandler(logging.NullHandler())

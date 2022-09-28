@@ -2,9 +2,9 @@
 """
 API for sending e-mail messages.
 """
+import logging
 from smtplib import SMTP_SSL
 from ssl import create_default_context
-import logging
 
 from ._formatting import FormattedEmail
 
