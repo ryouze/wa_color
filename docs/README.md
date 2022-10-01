@@ -154,6 +154,8 @@ requires an e-mail with smtp support (throwaway at interia works ig)
 
 if you're not using systemd as your init system, then you can create a cron job (*nix) or a scheduled task (windows) instead
 
+make sure to add a small startup delay (e.g., 40 seconds) to prevent it from using the fallback user agent - if it failed to fetch it on the first try, it will continue to use it till next restart
+
 ```bash
 cd /etc/systemd/system
 sudo nano wa_color.service
@@ -176,6 +178,7 @@ ExecStart=python3 /home/rin/wa_color/main.py
 Restart=on-failure
 RestartSec=300
 KillMode=mixed
+TimeoutStartSec=120
 
 [Install]
 WantedBy=multi-user.target
