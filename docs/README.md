@@ -152,7 +152,7 @@ requires an e-mail with smtp support (throwaway at interia works ig)
 
 ### 6. create systemd service
 
-if you're not running that as your init system, then you can create a cron job (*nix) or a scheduled task (windows) instead
+if you're not using systemd as your init system, then you can create a cron job (*nix) or a scheduled task (windows) instead
 
 ```bash
 cd /etc/systemd/system
@@ -178,6 +178,9 @@ KillMode=mixed
 
 [Install]
 WantedBy=multi-user.target
+
+[Service]
+ExecStartPre=/bin/sleep 60
 ```
 
 
