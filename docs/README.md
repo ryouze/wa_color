@@ -171,7 +171,7 @@ After=syslog.target network-online.target
 [Service]
 User=rin
 WorkingDirectory=/home/rin/wa_color
-ExecStartPre=/bin/sleep 30
+ExecStartPre=/bin/sleep 40
 ExecStart=python3 /home/rin/wa_color/main.py
 Restart=on-failure
 RestartSec=300
