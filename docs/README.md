@@ -171,6 +171,7 @@ After=syslog.target network-online.target
 [Service]
 User=rin
 WorkingDirectory=/home/rin/wa_color
+ExecStartPre=/bin/sleep 30
 ExecStart=python3 /home/rin/wa_color/main.py
 Restart=on-failure
 RestartSec=300
@@ -178,9 +179,6 @@ KillMode=mixed
 
 [Install]
 WantedBy=multi-user.target
-
-[Service]
-ExecStartPre=/bin/sleep 60
 ```
 
 
