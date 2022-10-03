@@ -44,14 +44,14 @@ class MailAPI:
                 )
                 return False
             # sender
-            sender_email: str = secret["email_sender"]["username"]  # Enter your address
-            password: str = secret["email_sender"]["password"]
-            port: int = secret["email_sender"]["port"]
-            smtp_server: str = secret["email_sender"]["server"]
+            sender_email: str = secret["email_sender"]["username"]  # name@example.com
+            password: str = secret["email_sender"]["password"]  # 123abc
+            port: int = secret["email_sender"]["port"]  # 465
+            smtp_server: str = secret["email_sender"]["server"]  # mail.example.com
             # list of receivers
-            receiver_emails: list = secret["email_receivers"]
+            receiver_emails: list = secret["email_receivers"]  # ["jeff@mail.com"]
         except Exception as e:
-            logging.warning(f"failed to setup e-mail variables ({e}), ignoring")
+            logging.error(f"failed to setup e-mail variables ({e}), please fix this")
             return False
         try:
             # send emails to all receivers
@@ -63,22 +63,24 @@ class MailAPI:
                 # for each receiver, create a formatted email and send it
                 for target in receiver_emails:
                     try:
-                        to_send = FormattedEmail(
+                        mail_obj = FormattedEmail(
                             source=sender_email,
                             destination=target,
                             subject=subject,
                             message=message,
                         )
-                        server.sendmail(sender_email, target, to_send.text)
+                        server.sendmail(sender_email, target, mail_obj.text)
                     except Exception as e:
                         logging.warning(
-                            f"failed to send e-mail message to '{target}' ({e})"
+                            f"failed to send e-mail message to '{target}' ({e}), ignoring"
                         )
                         continue
                     else:
-                        logging.debug(f"ok: sent e-mail message '{target}'")
+                        logging.info(f"ok: sent e-mail message to '{target}'")
                         continue
-            logging.debug(f"completed sending e-mail messages to '{receiver_emails}'")
+            logging.debug(
+                f"ok: completed sending e-mail messages to all targets '{receiver_emails}'"
+            )
             return True
         except Exception as e:
             logging.warning(f"failed to send e-mail ({e}), ignoring")
