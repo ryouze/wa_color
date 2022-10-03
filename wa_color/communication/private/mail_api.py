@@ -86,9 +86,7 @@ def send(
                     logging.info(f"ok: sent e-mail message to '{target}'")
                     continue
         except Exception as e:
-            logging.warning(
-                f"failed to send e-mails to '{receiver_emails}' ({e}), ignoring"
-            )
+            logging.error(f"failed to send e-mails to '{receiver_emails}' ({e})")
         else:
             logging.debug(f"ok: sent e-mails to '{receiver_emails}'")
             has_succeeded = True
