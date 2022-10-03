@@ -18,7 +18,7 @@ class Mail:
         Any changes are detected and formatted automatically.
 
         Args:
-            file_instance (obj): An instance of the File Manager class that accesses JSON files from disk.
+            file_instance (obj): An instance of the File Manager class that accesses JSON files from disk (or RAM, it's automatic).
         """
         # file instance
         self.file_instance = file_instance
@@ -61,11 +61,16 @@ class Mail:
                 msg += f"\n* [{num}] {key} - '{value}'"
                 continue
         logging.info(f"sending plan_color e-mail: '{msg}'")
-        return mail_api.send(
+        mail_status: bool = mail_api.send(
             secret=self.file_instance.secret,
-            subject="wa_color: lesson plan's color has changed",
+            subject=f"wa_color: lesson plan's color has changed ({iteration})",
             message=msg,
         )
+        if not mail_status:
+            logging.warning(
+                "failed to send e-mails for lesson plan color change, ignoring"
+            )
+        return mail_status
 
     def plan_link(self) -> bool:
         """
@@ -76,9 +81,11 @@ class Mail:
         Returns:
             bool: True if succeeded, False if failed.
         """
+        # beginning of the link to be removed, so it's easier to read
+        to_strip: str = r"https://wa.amu.edu.pl/timetables/"
         temp = self.file_instance.plan
         at_time: str = temp["metadata"]["last_change_link"]
-        new_link: list = temp["metadata"]["current_link"].replace(r"https://", "")
+        new_link: list = temp["metadata"]["current_link"].replace(to_strip, "")
         new_link_before_strip: str = temp["metadata"]["current_link"]
         # sort alphabetically (oldest to newest)
         # note: they're sorted alphabetically in JSON but not in cache, so this is a precaution
@@ -96,7 +103,7 @@ class Mail:
             msg: str = f"lesson plan's link has changed to '{new_link}' at '{at_time}'\n\nyou can view it here: {new_link_before_strip}"
         else:
             # if history present
-            old_link = list(old_links.values())[-1].replace(r"https://", "")
+            old_link = list(old_links.values())[-1].replace(to_strip, "")
             msg: str = f"lesson plan's link has changed from '{old_link}' to '{new_link}' at '{at_time}'\n\nyou can view it here: {new_link_before_strip}"
             # add entire history of links
             msg += "\n\nfull links history:"
@@ -104,11 +111,16 @@ class Mail:
                 msg += f"\n* [{num}] {key} - '{value}'"
                 continue
         logging.info(f"sending plan_link e-mail: '{msg}'")
-        return mail_api.send(
+        mail_status: bool = mail_api.send(
             secret=self.file_instance.secret,
             subject="wa_color: lesson plan's link has changed",
             message=msg,
         )
+        if not mail_status:
+            logging.warning(
+                "failed to send e-mails for lesson plan link change, ignoring"
+            )
+        return mail_status
 
     def plan_table(self) -> bool:
         """
@@ -141,11 +153,16 @@ class Mail:
                     # append positional data
                     msg += f"\n* [{day} @ {hour}] '{old_subj}' --> '{new_subj}'"
         logging.info(f"sending plan_table e-mail: '{msg}'")
-        return mail_api.send(
+        mail_status: bool = mail_api.send(
             secret=self.file_instance.secret,
             subject="wa_color: lesson plan's table has changed",
             message=msg,
         )
+        if not mail_status:
+            logging.warning(
+                "failed to send e-mails for lesson plan table change, ignoring"
+            )
+        return mail_status
 
     def cancel_content(self) -> bool:
         """
@@ -176,7 +193,7 @@ class Mail:
             sorted(difference.items(), key=lambda x: x, reverse=True)
         )
         if not difference:
-            logging.warning(
+            logging.error(
                 f"no difference in keys was found between old cancel '{old_cancel}' and new cancel '{new_cancel}', ignoring"
             )
             return False
@@ -188,11 +205,16 @@ class Mail:
         for num, (key, value) in enumerate(new_cancel.items(), start=1):
             msg += f"\n* [{num}] {key} - '{value}'"
         logging.info(f"sending cancel_content e-mail: '{msg}'")
-        return mail_api.send(
+        mail_status: bool = mail_api.send(
             secret=self.file_instance.secret,
-            subject="wa_color: class cancellations has changed",
+            subject=f"wa_color: class cancellations has changed ({iteration})",
             message=msg,
         )
+        if not mail_status:
+            logging.warning(
+                "failed to send e-mails for class cancellations change, ignoring"
+            )
+        return mail_status
 
     def debug(self) -> bool:
         """
@@ -205,8 +227,11 @@ class Mail:
         """
         msg: str = "this is a debug message to see if everything works"
         logging.info(f"sending debug e-mail: '{msg}'")
-        return mail_api.send(
+        mail_status: bool = mail_api.send(
             secret=self.file_instance.secret,
             subject="wa_color: debug message",
             message=msg,
         )
+        if not mail_status:
+            logging.warning("failed to send e-mails for debug message, ignoring")
+        return mail_status
