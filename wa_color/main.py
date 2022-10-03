@@ -183,7 +183,7 @@ class App:
                 logging.info(f"quitting after 1 loop because '{loop_wait_time=}'")
                 raise SystemExit  # same as "sys.exit()""
             self.sleep_loop(loop_wait_time)
-            logging.info(
+            logging.debug(
                 f"ok: running again after having waited for '{loop_wait_time}' seconds"
             )
             # purge all cached variables, so they will be re-downloaded from the web
