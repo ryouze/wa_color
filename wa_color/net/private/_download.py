@@ -350,6 +350,8 @@ class DownloadPlan:
                 logging.debug("main page not cached, downloading both now")
                 self._download_pages()
             self._main_color = self._get_color_from_soup(obj=self._downloaded_main_page)
+        else:
+            logging.debug("ok: color was cached, returning from RAM")
         return self._main_color
 
     @property
@@ -371,6 +373,8 @@ class DownloadPlan:
                 logging.debug("main page not cached, downloading both now")
                 self._download_pages()
             # _download_pages() will cache sublink as well because it's required to find subpage anyway
+        else:
+            logging.debug("ok: link was cached, returning from RAM")
         return self._sub_link
 
     @property
@@ -396,6 +400,8 @@ class DownloadPlan:
                 )
                 self._download_pages()
             self._sub_table = self._get_table_from_soup(obj=self._downloaded_sub_page)
+        else:
+            logging.debug("ok: table was cached, returning from RAM")
         return self._sub_table
 
     def reset(self) -> None:
@@ -520,6 +526,8 @@ class DownloadCancel:
         if not self._cancellations:
             logging.debug("cancellations not cached, scraping now")
             self._cancellations = self._get_cancellations_from_soup()
+        else:
+            logging.debug("ok: cancellations were cached, returning from RAM")
         return self._cancellations
 
     def reset(self) -> None:
