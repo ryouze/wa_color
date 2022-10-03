@@ -66,7 +66,7 @@ def main() -> None:
             logging.error(f"unknown cli argument: '{sys.argv[1]}', quitting")
             return None
     else:
-        logging.info("ok: no cli argument provided")
+        logging.debug("ok: no cli argument provided")
     # run webscraper as an infinite loop (unless 'loop_wait_time' is set to 0)
     app = App(reset=reset)
     app.run()
