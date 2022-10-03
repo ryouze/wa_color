@@ -172,7 +172,7 @@ class App:
             logging.info(f"running loop no. {num}")
             # scrap lesson plan, write to disk, send emails
             self.get_plan()
-            # wait 2-5 seconds to prevent rate-limiting, unless first run of the program (a file was missing)
+            # wait 5-10 seconds to prevent rate-limiting, unless first run of the program (a file was missing)
             if not self.file_manager.first_run:
                 self.sleep_random()
             else:
