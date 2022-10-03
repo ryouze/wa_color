@@ -4,7 +4,7 @@ Send e-mail messages based on type, with any changes being automatically detecte
 """
 import logging
 
-from .private.mail_api import MailAPI
+from .private import mail_api
 
 # setup per-module logger
 log = logging.getLogger(__name__).addHandler(logging.NullHandler())
@@ -61,7 +61,7 @@ class Mail:
                 msg += f"\n* [{num}] {key} - '{value}'"
                 continue
         logging.info(f"sending plan_color e-mail: '{msg}'")
-        return MailAPI.send(
+        return mail_api.send(
             secret=self.file_instance.secret,
             subject="wa_color: lesson plan's color has changed",
             message=msg,
@@ -104,7 +104,7 @@ class Mail:
                 msg += f"\n* [{num}] {key} - '{value}'"
                 continue
         logging.info(f"sending plan_link e-mail: '{msg}'")
-        return MailAPI.send(
+        return mail_api.send(
             secret=self.file_instance.secret,
             subject="wa_color: lesson plan's link has changed",
             message=msg,
@@ -141,7 +141,7 @@ class Mail:
                     # append positional data
                     msg += f"\n* [{day} @ {hour}] '{old_subj}' --> '{new_subj}'"
         logging.info(f"sending plan_table e-mail: '{msg}'")
-        return MailAPI.send(
+        return mail_api.send(
             secret=self.file_instance.secret,
             subject="wa_color: lesson plan's table has changed",
             message=msg,
@@ -188,7 +188,7 @@ class Mail:
         for num, (key, value) in enumerate(new_cancel.items(), start=1):
             msg += f"\n* [{num}] {key} - '{value}'"
         logging.info(f"sending cancel_content e-mail: '{msg}'")
-        return MailAPI.send(
+        return mail_api.send(
             secret=self.file_instance.secret,
             subject="wa_color: class cancellations has changed",
             message=msg,
@@ -205,7 +205,7 @@ class Mail:
         """
         msg: str = "this is a debug message to see if everything works"
         logging.info(f"sending debug e-mail: '{msg}'")
-        return MailAPI.send(
+        return mail_api.send(
             secret=self.file_instance.secret,
             subject="wa_color: debug message",
             message=msg,

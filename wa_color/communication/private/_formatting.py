@@ -37,7 +37,7 @@ class FormattedEmail:
         return None
 
     @property
-    def text(self) -> bytes:
+    def msg(self) -> bytes:
         """
         Return email with headers as encoded utf-8 bytes in the RFC 2822 format.
 
