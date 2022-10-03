@@ -54,15 +54,15 @@ class App:
         return None
 
     @staticmethod
-    def sleep_random(rand_min: int = 2, rand_max: int = 5) -> None:
+    def sleep_random(rand_min: int = 5, rand_max: int = 10) -> None:
         """
         Sleep for X seconds.
 
-        Default: random between 1-3 seconds.
+        Default: random between 5-10 seconds.
 
         Args:
-            rand_min (int, optional): Minimum time to sleep for. Defaults to 2.
-            rand_max (int, optional): Maximum time to sleep for. Defaults to 5.
+            rand_min (int, optional): Minimum time to sleep for. Defaults to 5.
+            rand_max (int, optional): Maximum time to sleep for. Defaults to 10.
         """
         # generate a random number of seconds to wait for
         wait_time: int = randint(rand_min, rand_max)
