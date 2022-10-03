@@ -97,10 +97,10 @@ git clone https://github.com/ryouze/wa_color/
 
 ### 2. install deps
 
-consider creating a venv first (put path to venv interpreter in systemd service instead of just python3): `python3 -m venv ./env --upgrade-deps && . bin/activate`
+consider creating a venv first (put path to venv interpreter in systemd service instead of just python3): `python3 -m venv ./env --upgrade-deps && source bin/activate`
 
 ```bash
-pip3 install beautifulsoup4 requests
+pip3 install -r requirements.txt
 ```
 
 
