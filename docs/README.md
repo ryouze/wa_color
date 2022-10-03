@@ -10,7 +10,7 @@ sends e-mails when the lesson plan or class cancellations change
 
 # reason
 * they change the plan so often that i thought it would be kinda convenient
-* i have a sbc lying around
+* i have a single board computer lying around
 
 
 ---
@@ -154,7 +154,7 @@ requires an e-mail with smtp support (throwaway at interia works ig)
 
 if you're not using systemd as your init system, then you can create a cron job (*nix) or a scheduled task (windows) instead
 
-make sure to add a small startup delay (e.g., 40 seconds) to prevent it from using the fallback user agent - if it failed to fetch it on the first try, it will continue to use it till next restart
+the ExecStartPre adds a startup delay (40 seconds) to prevent the program from using the fallback user agent - if it failed to fetch it on the first try, it will continue to use it till next restart
 
 ```bash
 cd /etc/systemd/system
@@ -214,8 +214,9 @@ now it's gonna check the AMU website every X seconds (as specified in `./config/
 if it fails to run, check if you have:
 
 * a) all the dependencies installed (requests, bs4)
-* b) entered the correct paths in the systemd service (user, workdir, execstart)
-* c) read/write permissions in the wa_color dir (chmod +rw)
+* b) activated the virtual environment (`source env/bin/activate`)
+* c) entered the correct paths in the systemd service (user, workdir, execstart)
+* d) read/write permissions in the wa_color dir (chmod +rw)
 
 
 ---
@@ -223,7 +224,7 @@ if it fails to run, check if you have:
 
 # args
 
-the program can take commandline arguments; this also enables DEBUG-level logging, in case something breaks
+the program can take commandline arguments; this also force-enables DEBUG-level logging, in case something breaks
 
 
 a) verbose - run normally but with verbose (DEBUG level) logging, useful for debugging
