@@ -178,7 +178,7 @@ class HtmlManager:
         r += (
             f"{' ' * 8}<tr>\n{' ' * 12}<th>"
             + f"</th>\n{' ' * 12}<th>".join(week.keys())
-            + f"</th>\n{' ' * 12}</tr>\n"
+            + f"</th>\n{' ' * 8}</tr>\n"
         )
         # append all classes
         for row in zip(*week.values()):
