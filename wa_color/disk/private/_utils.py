@@ -72,9 +72,6 @@ class Json:
         Args:
             obj (obj): Path-like object.
             value (dict): Contents to be written.
-
-        Returns:
-            _type_: None
         """
         try:
             with obj.open(mode="w", encoding="utf-8") as f:

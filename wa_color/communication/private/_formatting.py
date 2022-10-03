@@ -29,9 +29,6 @@ class FormattedEmail:
             destination (str): E-mail address of the receiver (e.g., markus@mail.com).
             subject (str): Subject/title of the message, ought to be short.
             message (str): Actual message in plain text.
-
-        Returns:
-            _type_: None
         """
         self._source: str = source
         self._destination: str = destination
