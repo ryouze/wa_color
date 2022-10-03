@@ -16,8 +16,9 @@ def config() -> dict:
             "group_pattern": "^1.*LMT",  # regex: students' group name
         },
         "URL": {
-            "plan": "https://wa.amu.edu.pl/timetables/zima_2022_2023/groups/index.html",
             "cancel": "https://wa.amu.edu.pl/wa/Nieobecnosci_WA/",
+            "plan_base": "https://wa.amu.edu.pl/timetables/",
+            "plan": "https://wa.amu.edu.pl/timetables/zima_2022_2023/groups/index.html",
         },
         "RUNTIME": {
             "loop_time_in_seconds": 0,  # set to 0 so program will quit after first run

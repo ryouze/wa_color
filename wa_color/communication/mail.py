@@ -36,7 +36,7 @@ class Mail:
         temp = self.file_instance.plan
         at_time: str = temp["metadata"]["last_change_color"]
         iteration: int = temp["metadata"]["current_iteration"]
-        new_color: list = temp["metadata"]["current_color"]
+        new_color: str = temp["metadata"]["current_color"]
         # sort alphabetically (oldest to newest)
         # note: they're sorted alphabetically in JSON but not in cache, so this is a precaution
         old_colors: dict = dict(
@@ -81,12 +81,12 @@ class Mail:
         Returns:
             bool: True if succeeded, False if failed.
         """
-        # beginning of the link to be removed, so it's easier to read
-        to_strip: str = r"https://wa.amu.edu.pl/timetables/"
         temp = self.file_instance.plan
         at_time: str = temp["metadata"]["last_change_link"]
-        new_link: list = temp["metadata"]["current_link"].replace(to_strip, "")
         new_link_before_strip: str = temp["metadata"]["current_link"]
+        # remove the beginning of the link, so it's easier to read
+        to_strip: str = self.file_instance.config["URL"]["plan_base"]
+        new_link: str = new_link_before_strip.replace(to_strip, "")
         # sort alphabetically (oldest to newest)
         # note: they're sorted alphabetically in JSON but not in cache, so this is a precaution
         old_links: dict = dict(
