@@ -50,15 +50,15 @@ class Mail:
         if not old_colors:
             # if no history
             logging.warning("not appending color history to email because it's empty")
-            msg: str = f"lesson plan's color has changed to '{new_color}' at '{at_time}' (iteration: {iteration})"
+            msg: str = f"lesson plan's color has changed to '#{new_color}' at '{at_time}' (iteration: {iteration})"
         else:
             # if history present
             old_color = list(old_colors.values())[-1]
-            msg: str = f"lesson plan's color has changed from '{old_color}' to '{new_color}' at '{at_time}' (iteration: {iteration})"
+            msg: str = f"lesson plan's color has changed from '#{old_color}' to '#{new_color}' at '{at_time}' (iteration: {iteration})"
             # add entire history of colors
             msg += "\n\nfull colors history:"
             for num, (key, value) in enumerate(old_colors.items(), start=1):
-                msg += f"\n* [{num}] {key} - '{value}'"
+                msg += f"\n* [{num}] {key} - '#{value}'"
                 continue
         logging.info(f"sending plan_color e-mail: '{msg}'")
         mail_status: bool = mail_api.send(
