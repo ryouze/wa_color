@@ -151,7 +151,7 @@ requires an e-mail with smtp support (throwaway at o2 works ig)
 
 ### 6. create systemd service
 
->**NOTE:** the `ExecStartPre` adds a startup delay (40 seconds) to prevent the program from using the fallback user agent<br>if you use a different init system (or a con job or a scheduled task) them make sure to add a delay of a similar size
+>**NOTE:** the `ExecStartPre` adds a startup delay (40 seconds) to prevent the program from using the fallback user agent<br>if you use a different init system (or a cron job or a scheduled task) them make sure to add a delay of a similar length
 
 ```bash
 cd /etc/systemd/system
