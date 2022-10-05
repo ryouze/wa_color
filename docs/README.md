@@ -10,7 +10,7 @@ sends e-mails when the lesson plan or class cancellations change
 
 # reason
 * they change the plan so often that i thought it would be kinda convenient
-* i have a single board computer lying around
+* i have a home server lying around
 
 
 ---
@@ -20,11 +20,10 @@ sends e-mails when the lesson plan or class cancellations change
 * parses, detects and replaces any broken files (including config)
 * sends a list of changes via e-mail in a human-readable format
 * fetches the latest win10 chrome header from the [web](https://www.whatismybrowser.com/guides/the-latest-user-agent/) to camouflage itself
-* loads content on-demand to slightly improve performance
 * keeps JSON files in RAM to prevent unnecessary reads from disk
 * has extensive logging and type hinting built-in
 * auto-retries after network error
-* can recreate the current and previous lesson plan as two HTML tables for easy comparison (via '--html' arg)
+* can recreate the current and previous lesson plan as two HTML tables for visual comparison
 
 
 ---
@@ -85,7 +84,7 @@ source code: https://github.com/ryouze/wa_color/
 
 # setup
 
-it is meant to run 24/7 on a headless linux server
+> **NOTE:** this is designed to run 24/7 on a headless linux server<br>the exact time at which a change supposedly occurred is based simply on the current time
 
 
 ### 1. clone the repo
@@ -97,7 +96,7 @@ git clone https://github.com/ryouze/wa_color/
 
 ### 2. install deps
 
-consider creating a venv first (put path to venv interpreter in systemd service instead of just python3): `python3 -m venv ./env --upgrade-deps && source env/bin/activate`
+> **NOTE:** consider creating a venv first: `python3 -m venv ./env --upgrade-deps && source env/bin/activate`<br>if you do create a venv then put full path to the venv's interpreter in systemd's `ExecStart` instead of just `python3`
 
 ```bash
 pip3 install -r requirements.txt
@@ -106,9 +105,9 @@ pip3 install -r requirements.txt
 
 ### 3. run once
 
-create files, fetch latest lesson plan and class cancellations
+this will fetch latest lesson plan and class cancellations, then save them to newly creates files
 
-wait like 10-15s for it to finish (it will quit immediately after first run)
+> **NOTE:** wait around 10-15s for it to finish (it will quit immediately after first run)
 
 ```bash
 python3 main.py
@@ -147,14 +146,12 @@ nano config/secret.json
 * username - your e-mail address (e.g., "name.surname@example.mail.com").
 ```
 
-requires an e-mail with smtp support (throwaway at interia works ig)
+requires an e-mail with smtp support (throwaway at o2 works ig)
 
 
 ### 6. create systemd service
 
-if you're not using systemd as your init system, then you can create a cron job (*nix) or a scheduled task (windows) instead
-
-the ExecStartPre adds a startup delay (40 seconds) to prevent the program from using the fallback user agent - if it failed to fetch it on the first try, it will continue to use it till next restart
+>**NOTE:** the `ExecStartPre` adds a startup delay (40 seconds) to prevent the program from using the fallback user agent<br>if you use a different init system (or a con job or a scheduled task) them make sure to add a delay of a similar size
 
 ```bash
 cd /etc/systemd/system
@@ -215,8 +212,9 @@ if it fails to run, check if you have:
 
 * a) all the dependencies installed (requests, bs4)
 * b) activated the virtual environment (`source env/bin/activate`)
-* c) entered the correct paths in the systemd service (user, workdir, execstart)
-* d) read/write permissions in the wa_color dir (chmod +rw)
+* c) entered the correct paths in the systemd service (workdir, main.py)
+* d) tried running the command in systemd's `ExecStart` directly (e.g., `python3 /home/rin/wa_color/main.py`)
+* e) read/write permissions in the wa_color dir (chmod +rw)
 
 
 ---
@@ -251,7 +249,7 @@ python3 main.py --mail
 ```
 
 
-d) reset - re-create all directories from scratch (effectively equivalent to re-downloading the whole program and running it for the 1st time)
+d) reset - re-create all directories from scratch, fetch all data, then quit (effectively equivalent to re-downloading the whole program and running it for the 1st time)
 
 
 ```bash
