@@ -109,24 +109,16 @@ class App:
             # content of targeted lesson plan table
             if self.plan_manager.is_table_changed() and self.email_plan_enabled:
                 self.mail_manager.plan_table()
-        except HTTPError as e:
+        except (ConnectionError, HTTPError, Timeout) as e:
             # small log
-            logging.info(
-                f"failed to download lesson plan because the HTTP error was raised ({e})"
-            )
-        except Timeout as e:
-            # small log
-            logging.info(
-                f"failed to download lesson plan because the maximum timeout for the server to respond was exceed ({e})"
-            )
-        except ConnectionError as e:
-            # small log
-            logging.info(
-                f"failed to download class cancellations because of connection error (are you online?) ({e})"
+            logging.warning(
+                f"failed to download lesson plan due to network error ({e})"
             )
         except Exception as e:
             # extremely verbose log
-            logging.exception(f"unknown error: lesson plan ({e})")
+            logging.exception(
+                f"failed to download lesson plan due to unknown error ({e})"
+            )
         finally:
             return None
 
@@ -144,24 +136,16 @@ class App:
                 and self.email_cancel_enabled
             ):
                 self.mail_manager.cancel_content()
-        except HTTPError as e:
+        except (ConnectionError, HTTPError, Timeout) as e:
             # small log
-            logging.info(
-                f"failed to download class cancellations because the HTTP error was raised ({e})"
-            )
-        except Timeout as e:
-            # small log
-            logging.info(
-                f"failed to download class cancellations because the maximum timeout for the server to respond was exceed ({e})"
-            )
-        except ConnectionError as e:
-            # small log
-            logging.info(
-                f"failed to download class cancellations because of connection error (are you online?) ({e})"
+            logging.warning(
+                f"failed to download class cancellations due to network error ({e})"
             )
         except Exception as e:
             # extremely verbose log
-            logging.exception(f"unknown error: class cancellations ({e})")
+            logging.exception(
+                f"failed to download class cancellations due to unknown error ({e})"
+            )
         finally:
             return None
 

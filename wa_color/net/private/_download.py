@@ -6,7 +6,8 @@ import logging
 import re
 
 from bs4 import BeautifulSoup
-from requests import HTTPError, Session
+from requests import Session
+from requests.exceptions import ConnectionError, HTTPError, Timeout
 
 from . import _convert as convert
 
@@ -82,15 +83,17 @@ class _Shared:
             logging.info(f"ok: extracted latest user agent '{scraped_agent}'")
             # cache latest user agent
             cls._ua = scraped_agent
-        except HTTPError as e:
+        except (ConnectionError, HTTPError, Timeout) as e:
+            # small log
             logging.warning(
-                f"failed to extract latest user agent due to a network issue ({e}), returning default '{default_agent}'"
+                f"failed to download user agent due to network error ({e}), returning default '{default_agent}'"
             )
             # cache default user agent
             cls._ua = default_agent
         except Exception as e:
-            logging.warning(
-                f"failed to extract latest user agent ({e}), returning default '{default_agent}'"
+            # extremely verbose log
+            logging.exception(
+                f"failed to download user agent due to unknown error ({e}), returning default '{default_agent}'"
             )
             # cache default user agent
             cls._ua = default_agent
