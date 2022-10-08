@@ -3,14 +3,19 @@
 Send e-mail messages based on type, with any changes being automatically detected.
 """
 import logging
-
-from .private import mail_api
+from email.message import EmailMessage
+from platform import python_version, system
+from smtplib import SMTP_SSL
+from ssl import create_default_context
 
 # setup per-module logger
 log = logging.getLogger(__name__).addHandler(logging.NullHandler())
 
 
 class Mail:
+    # footer appended at the end of every message, same for every instance
+    footer: str = f"\n\nsent from {system().lower()} running python {python_version()}\nsource code: https://github.com/ryouze/wa_color/"
+
     def __init__(self, file_instance) -> None:
         """
         Send e-mails based on type.
@@ -22,7 +27,85 @@ class Mail:
         """
         # file instance
         self.file_instance = file_instance
+        self.timeout: int = 30
         return None
+
+    def send_mail(
+        self,
+        subject: str,
+        message: str,
+    ) -> bool:
+        """
+        Send plain-text e-mail messages to all receivers.
+
+        -> Return True if succeeded.
+        -> Return False if failed (no raise).
+
+        Args:
+            subject (str): Subject/title of the message, ought to be short.
+            message (str): Actual message in plain text.
+
+        Returns:
+            bool: True if succeeded, False if failed.
+        """
+        has_succeeded: bool = False
+        try:
+            secret = self.file_instance.secret
+            # if user hasn't changed default sender, do not even try to send any e-mails
+            default_sender: str = "name.surname@example.mail.com"
+            if secret["email_sender"]["username"] == "name.surname@example.mail.com":
+                logging.debug(
+                    f"will not send e-mails because the user hasn't changed the default sender e-mail '{default_sender}' in user.json, ignoring"
+                )
+                raise Exception(
+                    "default sender e-mail in user config hasn't been changed yet"
+                )
+            # sender's details
+            sender_email: str = secret["email_sender"]["username"]  # name@example.com
+            password: str = secret["email_sender"]["password"]  # 123abc
+            port: int = secret["email_sender"]["port"]  # 465
+            smtp_server: str = secret["email_sender"]["server"]  # mail.example.com
+            # list of receivers
+            receiver_emails: list = secret["email_receivers"]  # ["jeff@mail.com"]
+        except Exception as e:
+            logging.warning(
+                f"failed to setup e-mail variables ({e}), e-mails will not be sent"
+            )
+        else:
+            logging.debug(
+                f"trying to log into the sender's e-mail account '{sender_email}' (server={smtp_server}; port={port})"
+            )
+            try:
+                context = create_default_context()
+                with SMTP_SSL(
+                    smtp_server,
+                    port,
+                    context=context,
+                    timeout=self.timeout,
+                ) as server:
+                    server.login(sender_email, password)
+                    logging.debug(
+                        f"ok: logged into '{sender_email}', now trying to send e-mails to '{receiver_emails}'"
+                    )
+                    # for each receiver, create a formatted email and send it
+                    for target in receiver_emails:
+                        email = EmailMessage()
+                        email["Subject"] = subject
+                        email["From"] = sender_email
+                        email["To"] = target
+                        message += self.footer
+                        email.set_content(message)
+                        logging.debug(f"trying to send e-mail to '{target}'")
+                        server.send_message(email)
+                        logging.info(f"ok: sent e-mail message to '{target}'")
+                        continue
+            except Exception as e:
+                logging.error(f"failed to send e-mails to '{receiver_emails}' ({e})")
+            else:
+                logging.debug(f"ok: sent e-mails to '{receiver_emails}'")
+                has_succeeded = True
+        finally:
+            return has_succeeded
 
     def plan_color(self) -> bool:
         """
@@ -61,8 +144,7 @@ class Mail:
                 msg += f"\n* [{num}] {key} - '#{value}'"
                 continue
         logging.info(f"sending plan_color e-mail: '{msg}'")
-        mail_status: bool = mail_api.send(
-            secret=self.file_instance.secret,
+        mail_status: bool = self.send_mail(
             subject=f"wa_color: lesson plan's color has changed ({iteration})",
             message=msg,
         )
@@ -111,8 +193,7 @@ class Mail:
                 msg += f"\n* [{num}] {key} - '{value}'"
                 continue
         logging.info(f"sending plan_link e-mail: '{msg}'")
-        mail_status: bool = mail_api.send(
-            secret=self.file_instance.secret,
+        mail_status: bool = self.send_mail(
             subject="wa_color: lesson plan's link has changed",
             message=msg,
         )
@@ -153,8 +234,7 @@ class Mail:
                     # append positional data
                     msg += f"\n* [{day} @ {hour}] '{old_subj}' --> '{new_subj}'"
         logging.info(f"sending plan_table e-mail: '{msg}'")
-        mail_status: bool = mail_api.send(
-            secret=self.file_instance.secret,
+        mail_status: bool = self.send_mail(
             subject="wa_color: lesson plan's table has changed",
             message=msg,
         )
@@ -205,8 +285,7 @@ class Mail:
         for num, (key, value) in enumerate(new_cancel.items(), start=1):
             msg += f"\n* [{num}] {key} - '{value}'"
         logging.info(f"sending cancel_content e-mail: '{msg}'")
-        mail_status: bool = mail_api.send(
-            secret=self.file_instance.secret,
+        mail_status: bool = self.send_mail(
             subject=f"wa_color: class cancellations has changed ({iteration})",
             message=msg,
         )
@@ -227,8 +306,7 @@ class Mail:
         """
         msg: str = "this is a debug message to see if everything works"
         logging.info(f"sending debug e-mail: '{msg}'")
-        mail_status: bool = mail_api.send(
-            secret=self.file_instance.secret,
+        mail_status: bool = self.send_mail(
             subject="wa_color: debug message",
             message=msg,
         )
