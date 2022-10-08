@@ -22,7 +22,8 @@ def config() -> dict:
         },
         "RUNTIME": {
             "loop_time_in_seconds": 0,  # set to 0 so program will quit after first run
-            "send_email": True,
+            "send_email_plan": True,
+            "send_email_cancel": True,
         },
     }
     return r

@@ -45,7 +45,12 @@ class App:
             reset=reset,
         )
         # whether to send e-mails to all participants or not
-        self.email_enabled: bool = self.file_manager.config["RUNTIME"]["send_email"]
+        self.email_plan_enabled: bool = self.file_manager.config["RUNTIME"][
+            "send_email_plan"
+        ]
+        self.email_cancel_enabled: bool = self.file_manager.config["RUNTIME"][
+            "send_email_cancel"
+        ]
         # webscraper instances
         self.plan_manager = Plan(self.file_manager)
         self.cancel_manager = Cancel(self.file_manager)
@@ -96,13 +101,13 @@ class App:
         try:
             # note: running the function on its own will cause the webscrapper to run and write to disk (e.g., is_color_changed())
             # main page's background color
-            if self.plan_manager.is_color_changed() and self.email_enabled:
+            if self.plan_manager.is_color_changed() and self.email_plan_enabled:
                 self.mail_manager.plan_color()
             # link to targeted table
-            if self.plan_manager.is_link_changed() and self.email_enabled:
+            if self.plan_manager.is_link_changed() and self.email_plan_enabled:
                 self.mail_manager.plan_link()
             # content of targeted lesson plan table
-            if self.plan_manager.is_table_changed() and self.email_enabled:
+            if self.plan_manager.is_table_changed() and self.email_plan_enabled:
                 self.mail_manager.plan_table()
         except HTTPError as e:
             # small log
@@ -134,7 +139,10 @@ class App:
         """
         try:
             # class cancellations list
-            if self.cancel_manager.is_cancellations_changed() and self.email_enabled:
+            if (
+                self.cancel_manager.is_cancellations_changed()
+                and self.email_cancel_enabled
+            ):
                 self.mail_manager.cancel_content()
         except HTTPError as e:
             # small log
