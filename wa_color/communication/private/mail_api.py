@@ -3,13 +3,16 @@
 API for sending e-mail messages.
 """
 import logging
+from email.message import EmailMessage
+from platform import python_version, system
 from smtplib import SMTP_SSL
 from ssl import create_default_context
 
-from ._formatting import FormattedEmail
-
 # setup per-module logger
 log = logging.getLogger(__name__).addHandler(logging.NullHandler())
+
+# footer appended at the end of every message, same for every instance
+footer: str = f"\n\nsent from {system().lower()} running python {python_version()}\nsource code: https://github.com/ryouze/wa_color/"
 
 
 def send(
@@ -73,16 +76,14 @@ def send(
                 )
                 # for each receiver, create a formatted email and send it
                 for target in receiver_emails:
-                    mail_obj = FormattedEmail(
-                        source=sender_email,
-                        destination=target,
-                        subject=subject,
-                        message=message,
-                    )
-                    # contains header, everything is encoded in utf-8
-                    msg: bytes = mail_obj.msg
+                    email = EmailMessage()
+                    email["Subject"] = subject
+                    email["From"] = sender_email
+                    email["To"] = target
+                    message += footer
+                    email.set_content(message)
                     logging.debug(f"trying to send e-mail to '{target}'")
-                    server.sendmail(sender_email, target, msg)
+                    server.send_message(email)
                     logging.info(f"ok: sent e-mail message to '{target}'")
                     continue
         except Exception as e:
