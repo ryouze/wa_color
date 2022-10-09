@@ -101,15 +101,17 @@ class App:
         try:
             # note: running the function on its own will cause the webscrapper to run and write to disk (e.g., is_color_changed())
             # main page's background color
-            if self.plan_manager.is_color_changed() and self.email_plan_enabled:
+            if self.plan_manager.is_color_changed():
                 self.mail_manager.add_plan_color()
             # link to targeted table
-            if self.plan_manager.is_link_changed() and self.email_plan_enabled:
+            if self.plan_manager.is_link_changed():
                 self.mail_manager.add_plan_link()
             # content of targeted lesson plan table
-            if self.plan_manager.is_table_changed() and self.email_plan_enabled:
+            if self.plan_manager.is_table_changed():
                 self.mail_manager.add_plan_table()
-            self.mail_manager.send_plan_email()
+            # will send if changes occurred, otherwise ignore
+            if self.email_plan_enabled:
+                self.mail_manager.send_plan_email()
         except (ConnectionError, HTTPError, Timeout) as e:
             # small log
             logging.warning(
