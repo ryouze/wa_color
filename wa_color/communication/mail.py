@@ -14,7 +14,7 @@ log = logging.getLogger(__name__).addHandler(logging.NullHandler())
 
 class Mail:
     # footer appended at the end of every message, same for every instance
-    footer: str = f"\n\nsent from {system().lower()} running python {python_version()}\nsource code: https://github.com/ryouze/wa_color/"
+    footer: str = f"sent from {system().lower()} running python {python_version()}\nsource code: https://github.com/ryouze/wa_color/"
 
     def __init__(self, file_instance) -> None:
         """
@@ -28,9 +28,11 @@ class Mail:
         # file instance
         self.file_instance = file_instance
         self.timeout: int = 30
+        # cached variables
+        self.plan_to_send: list = list()
         return None
 
-    def send_mail(
+    def send_mail_api(
         self,
         subject: str,
         message: str,
@@ -107,14 +109,11 @@ class Mail:
         finally:
             return has_succeeded
 
-    def plan_color(self) -> bool:
+    def add_plan_color(self) -> None:
         """
-        Send e-mail message for the Lesson Plan's color change.
+        Append e-mail message for the Lesson Plan's color change.
 
         Any changes are detected and formatted automatically.
-
-        Returns:
-            bool: True if succeeded, False if failed.
         """
         temp = self.file_instance.plan
         at_time: str = temp["metadata"]["last_change_color"]
@@ -143,25 +142,15 @@ class Mail:
             for num, (key, value) in enumerate(old_colors.items(), start=1):
                 msg += f"\n* [{num}] {key} - '#{value}'"
                 continue
-        logging.info(f"sending plan_color e-mail: '{msg}'")
-        mail_status: bool = self.send_mail(
-            subject=f"wa_color: lesson plan's color has changed ({iteration})",
-            message=msg,
-        )
-        if not mail_status:
-            logging.warning(
-                "failed to send e-mails for lesson plan color change, ignoring"
-            )
-        return mail_status
+        logging.info(f"appending plan_color e-mail: '{msg}'")
+        self.plan_to_send.append(msg)
+        return None
 
-    def plan_link(self) -> bool:
+    def add_plan_link(self) -> None:
         """
-        Send e-mail message for the Lesson Plan's link change.
+        Append e-mail message for the Lesson Plan's link change.
 
         Any changes are detected and formatted automatically.
-
-        Returns:
-            bool: True if succeeded, False if failed.
         """
         temp = self.file_instance.plan
         at_time: str = temp["metadata"]["last_change_link"]
@@ -192,25 +181,15 @@ class Mail:
             for num, (key, value) in enumerate(old_links.items(), start=1):
                 msg += f"\n* [{num}] {key} - '{value}'"
                 continue
-        logging.info(f"sending plan_link e-mail: '{msg}'")
-        mail_status: bool = self.send_mail(
-            subject="wa_color: lesson plan's link has changed",
-            message=msg,
-        )
-        if not mail_status:
-            logging.warning(
-                "failed to send e-mails for lesson plan link change, ignoring"
-            )
-        return mail_status
+        logging.info(f"appending plan_link e-mail: '{msg}'")
+        self.plan_to_send.append(msg)
+        return None
 
-    def plan_table(self) -> bool:
+    def add_plan_table(self) -> None:
         """
         Send e-mail message for the Lesson Plan's table change.
 
         Any changes are detected and formatted automatically.
-
-        Returns:
-            bool: True if succeeded, False if failed.
         """
         temp = self.file_instance.plan
         old_plan: dict = temp["previous"]
@@ -233,18 +212,39 @@ class Mail:
                     new_subj = new_subj.replace("\n", "; ")
                     # append positional data
                     msg += f"\n* [{day} @ {hour}] '{old_subj}' --> '{new_subj}'"
-        logging.info(f"sending plan_table e-mail: '{msg}'")
-        mail_status: bool = self.send_mail(
-            subject="wa_color: lesson plan's table has changed",
+        logging.info(f"appending plan table e-mail: '{msg}'")
+        self.plan_to_send.append(msg)
+        return None
+
+    def send_plan_email(self) -> bool:
+        """
+        Send e-mail message for the lesson plan's change.
+
+        Any changes are detected and formatted automatically.
+
+        Returns:
+            bool: True if succeeded, False if failed.
+        """
+        if not self.plan_to_send:
+            logging.debug("not sending plan email because 'plan_to_send' is empty")
+            return False
+        msg: str = str()
+        for num, content in enumerate(self.plan_to_send, start=1):
+            msg += f"{num}. {content}\n\n---\n\n"
+            continue
+        # the iteration should be in sync because they change the color whenever they change literally anything
+        iteration: bool = self.file_instance.plan["metadata"]["current_iteration"]
+        mail_status: bool = self.send_mail_api(
+            subject=f"wa_color: lesson plan has changed ({iteration})",
             message=msg,
         )
         if not mail_status:
-            logging.warning(
-                "failed to send e-mails for lesson plan table change, ignoring"
-            )
+            logging.warning("failed to send e-mails for lesson plan change, ignoring")
+        # reset content
+        self.plan_to_send: list = list()
         return mail_status
 
-    def cancel_content(self) -> bool:
+    def send_cancel_email(self) -> bool:
         """
         Send e-mail message for the class cancellations's content change.
 
@@ -265,7 +265,7 @@ class Mail:
             sorted(temp["current"].items(), key=lambda x: x, reverse=True)
         )
         del temp  # delete, unneeded
-        msg: str = f"class cancellation has changed at '{at_time}' (iteration: {iteration})\n\nnew entries only:"
+        msg: str = f"class cancellation have changed at '{at_time}' (iteration: {iteration})\n\nnew entries only:"
         # find new keys in new_cancel (values are ignored)
         difference = {k: new_cancel[k] for k in set(new_cancel) - set(old_cancel)}
         # sort reverse alphabetically (newest to oldest)
@@ -280,13 +280,16 @@ class Mail:
         # add new entries
         for num, (key, value) in enumerate(difference.items(), start=1):
             msg += f"\n* [{num}] {key} - '{value}'"
+        link: str = self.file_instance.config["URL"]["cancel"]
+        msg += f"\n\nyou can view them here: {link}"
         # add entire list
-        msg += "\n\nall class cancellations:"
+        msg += "\n\nfull class cancellations history:"
         for num, (key, value) in enumerate(new_cancel.items(), start=1):
             msg += f"\n* [{num}] {key} - '{value}'"
+        msg += "\n\n---\n\n"  # spacing for footer
         logging.info(f"sending cancel_content e-mail: '{msg}'")
-        mail_status: bool = self.send_mail(
-            subject=f"wa_color: class cancellations has changed ({iteration})",
+        mail_status: bool = self.send_mail_api(
+            subject=f"wa_color: class cancellations have changed ({iteration})",
             message=msg,
         )
         if not mail_status:
@@ -306,7 +309,7 @@ class Mail:
         """
         msg: str = "this is a debug message to see if everything works"
         logging.info(f"sending debug e-mail: '{msg}'")
-        mail_status: bool = self.send_mail(
+        mail_status: bool = self.send_mail_api(
             subject="wa_color: debug message",
             message=msg,
         )

@@ -102,13 +102,14 @@ class App:
             # note: running the function on its own will cause the webscrapper to run and write to disk (e.g., is_color_changed())
             # main page's background color
             if self.plan_manager.is_color_changed() and self.email_plan_enabled:
-                self.mail_manager.plan_color()
+                self.mail_manager.add_plan_color()
             # link to targeted table
             if self.plan_manager.is_link_changed() and self.email_plan_enabled:
-                self.mail_manager.plan_link()
+                self.mail_manager.add_plan_link()
             # content of targeted lesson plan table
             if self.plan_manager.is_table_changed() and self.email_plan_enabled:
-                self.mail_manager.plan_table()
+                self.mail_manager.add_plan_table()
+            self.mail_manager.send_plan_email()
         except (ConnectionError, HTTPError, Timeout) as e:
             # small log
             logging.warning(
@@ -135,7 +136,7 @@ class App:
                 self.cancel_manager.is_cancellations_changed()
                 and self.email_cancel_enabled
             ):
-                self.mail_manager.cancel_content()
+                self.mail_manager.send_cancel_email()
         except (ConnectionError, HTTPError, Timeout) as e:
             # small log
             logging.warning(
