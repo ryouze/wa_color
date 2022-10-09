@@ -187,7 +187,7 @@ class Mail:
 
     def add_plan_table(self) -> None:
         """
-        Send e-mail message for the Lesson Plan's table change.
+        Append e-mail message for the Lesson Plan's table change.
 
         Any changes are detected and formatted automatically.
         """
