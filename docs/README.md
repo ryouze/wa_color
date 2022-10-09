@@ -124,7 +124,8 @@ nano config/user.json
 ```
 * loop_time_in_seconds - how much to wait in seconds between each loop (e.g., 900, 3600, 7200).
 -> if set to 0 (default), then run only once, then quit.
-* send_email - should an e-mail be sent on any detected change (e.g., true).
+* send_email_cancel - should an e-mail be sent on class cancellations change (e.g., true; disable if spam).
+* send_email_plan - should an e-mail be sent on lesson plan change (e.g., true).
 * group_pattern - regex pattern used to find your lesson group (e.g., "^1.*LMT").
 * cancel - link to a list of class cancellations.
 * plan - link to a list of lesson plans for all groups.
