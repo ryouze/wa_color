@@ -234,6 +234,7 @@ class Mail:
             continue
         # the iteration should be in sync because they change the color whenever they change literally anything
         iteration: bool = self.file_instance.plan["metadata"]["current_iteration"]
+        logging.info(f"important: sending lesson plan e-mail: '{msg}'")
         mail_status: bool = self.send_mail_api(
             subject=f"wa_color: lesson plan has changed ({iteration})",
             message=msg,
@@ -287,7 +288,7 @@ class Mail:
         for num, (key, value) in enumerate(new_cancel.items(), start=1):
             msg += f"\n* [{num}] {key} - '{value}'"
         msg += "\n\n---\n\n"  # spacing for footer
-        logging.info(f"sending cancel_content e-mail: '{msg}'")
+        logging.info(f"important: sending cancel e-mail: '{msg}'")
         mail_status: bool = self.send_mail_api(
             subject=f"wa_color: class cancellations have changed ({iteration})",
             message=msg,
