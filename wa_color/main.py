@@ -198,11 +198,6 @@ class Debug(App):
     >>> debug.mail()
     """
 
-    def __init__(self) -> None:
-        # inherit all instances (file, lesson plan, cancel, mail)
-        super().__init__(reset=False)
-        return None
-
     def mail(self) -> bool:
         """
         Send debug mail to all targets ("email_receivers") in secret.json.
