@@ -192,6 +192,9 @@ sudo systemctl enable wa_color.service
 ```
 
 (II) start manually right now
+
+>**NOTE:** the `ExecStartPre` adds a startup delay (40 seconds), which will make the shell unresponsive for 40 seconds before starting the program; since i rarely start it this way, i haven't bothered adding a delay in the program itself
+
 ```bash
 sudo systemctl start wa_color.service
 ```
@@ -215,7 +218,7 @@ if it fails to run, check if you have:
 * b) activated the virtual environment (`source env/bin/activate`)
 * c) entered the correct paths in the systemd service (workdir, main.py)
 * d) tried running the command in systemd's `ExecStart` directly (e.g., `python3 /home/rin/wa_color/main.py`)
-* e) read/write permissions in the wa_color dir (chmod +rw)
+* e) read/write permissions in the wa_color dir (`chmod +rw <directory>`)
 
 
 ---
