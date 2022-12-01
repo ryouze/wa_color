@@ -226,10 +226,10 @@ if it fails to run, check if you have:
 
 # args
 
-the program can take commandline arguments
+the program can take multiple commandline arguments
 
 
-a) verbose - run normally but with verbose (DEBUG level) logging, useful for debugging
+a) verbose - enable verbose, debug-level logging, useful for debugging
 
 
 ```bash
@@ -253,7 +253,7 @@ python3 main.py --mail
 ```
 
 
-d) reset - re-create all directories from scratch, fetch all data, then quit (effectively equivalent to re-downloading the whole program and running it for the 1st time)
+d) reset - re-create all directories from scratch, fetch all data, then quit (effectively equivalent to re-downloading the whole program and running it for the first time)
 
 
 ```bash
