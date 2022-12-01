@@ -226,7 +226,7 @@ if it fails to run, check if you have:
 
 # args
 
-the program can take commandline arguments; this also force-enables DEBUG-level logging, in case something breaks
+the program can take commandline arguments
 
 
 a) verbose - run normally but with verbose (DEBUG level) logging, useful for debugging
