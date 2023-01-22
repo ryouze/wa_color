@@ -128,7 +128,6 @@ class Mail:
                 reverse=False,
             )
         )
-        del temp  # delete, unneeded
         if not old_colors:
             # if no history
             logging.warning("not appending color history to email because it's empty")
@@ -167,7 +166,6 @@ class Mail:
                 reverse=False,
             )
         )
-        del temp  # delete, unneeded
         if not old_links:
             # if no history
             logging.warning("not appending link history to email because it's empty")
@@ -195,7 +193,6 @@ class Mail:
         old_plan: dict = temp["previous"]
         at_time: str = temp["metadata"]["last_change_table"]
         new_plan: dict = temp["current"]
-        del temp  # delete, unneeded
         msg: str = (
             f"lesson plan's table has changed at '{at_time}', here are the differences:"
         )
@@ -265,7 +262,6 @@ class Mail:
         new_cancel: dict = dict(
             sorted(temp["current"].items(), key=lambda x: x, reverse=True)
         )
-        del temp  # delete, unneeded
         msg: str = f"class cancellation have changed at '{at_time}' (iteration: {iteration})\n\nnew entries only:"
         # find new keys in new_cancel (values are ignored)
         difference = {k: new_cancel[k] for k in set(new_cancel) - set(old_cancel)}

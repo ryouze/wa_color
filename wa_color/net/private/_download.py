@@ -68,7 +68,6 @@ class _Shared:
             li = table.find("li")
             span = li.find("span", {"class": "code"})
             scraped_agent: str = span.get_text(strip=True)
-            del soup, table, li, span  # delete, unneeded
             # if shorter than 5 characters, raise exception to trigger default user agent
             if len(scraped_agent) < 5:
                 raise Exception(
