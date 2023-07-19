@@ -1,35 +1,33 @@
 # wa_color
-python3 webscraper for AMU website
+Lesson plan webscraper.
 
-
-sends e-mails when the lesson plan or class cancellations change
-
-
----
-
-
-# reason
-* they change the plan so often that i thought it would be kinda convenient
-* i have a home server lying around
+Whenever the lesson plan or class cancellations change, it sends e-mails to a list of targets.
 
 
 ---
 
 
-# features
-* parses, detects and replaces any broken files (including config)
-* sends a list of changes via e-mail in a human-readable format
-* fetches the latest win10 chrome header from the [web](https://www.whatismybrowser.com/guides/the-latest-user-agent/) to camouflage itself
-* keeps JSON files in RAM to prevent unnecessary reads from disk
-* has extensive logging and type hinting built-in
-* auto-retries after network error
-* can recreate the current and previous lesson plan as two HTML tables for visual comparison
+# Explanation
+* They change the plan so often that I thought it would be kinda convenient (my classmates agree).
+* I have a home server lying around.
 
 
 ---
 
 
-# example
+# Features
+* Detects & replaces broken files (including config files)
+* Sends a list of changes via e-mail in a human-readable format
+* Caches JSON files to prevent unnecessary reads from disk
+* Fetches the latest win10 chrome header from the [web](https://www.whatismybrowser.com/guides/the-latest-user-agent/) to camouflage itself
+* Includes extensive logging and type hinting
+* Can create a HTML table that displays the current & previous lesson plan for visual comparison
+
+
+---
+
+
+# Example
 
 ```
 title: wa_color: lesson plan's table has changed
@@ -63,58 +61,58 @@ source code: https://github.com/ryouze/wa_color/
 ---
 
 
-# structure
+# File structure
 
-* `main.py` - run program
-* `config/` - user-defined config files
-  * `secret.json` - e-mail credentials
-  * `user.json` - config
-* `wa_color/` - program's code
-  * `communication/` - send e-mail
-  * `disk/` - local files
-  * `net/` - scrap websites
-  * `main.py` - main app and debug class
-* `work/` - program-defined data files
-  * `cancel.json` - class cancellations
-  * `plan.json` - lesson plan
+* `main.py` - run program.
+* `config/` - user-defined config files.
+  * `secret.json` - e-mail credentials.
+  * `user.json` - config.
+* `wa_color/` - program's code.
+  * `communication/` - send e-mail.
+  * `disk/` - local files.
+  * `net/` - scrap websites.
+  * `main.py` - main app and debug class.
+* `work/` - program-defined data files.
+  * `cancel.json` - class cancellations.
+  * `plan.json` - lesson plan.
 
 
 ---
 
 
-# setup
+# Setup
 
-> **NOTE:** this is designed to run 24/7 on a headless linux server<br>the exact time at which a change supposedly occurred is based simply on the current time
+> **NOTE:** This is designed to run 24/7 on a headless GNU/LINUX server.<br>The exact time at which a change supposedly occurred is based simply on the current time.
 
 
-### 1. clone the repo
+### 1. Clone the repo
 
 ```bash
 git clone https://github.com/ryouze/wa_color/
 ```
 
 
-### 2. install deps
+### 2. Install dependencies
 
-> **NOTE:** consider creating a venv first: `python3 -m venv ./env --upgrade-deps && source env/bin/activate`<br>if you do create a venv then put full path to the venv's interpreter in systemd's `ExecStart` instead of just `python3`
+> **NOTE:** Consider creating a virtual environment first: `python3 -m venv ./env --upgrade-deps && source env/bin/activate`<br>If you do create a venv then put full path to the venv's interpreter in systemd's `ExecStart` instead of just `python3`.
 
 ```bash
 pip3 install -r requirements.txt
 ```
 
 
-### 3. run once
+### 3. Run once
 
-this will fetch latest lesson plan and class cancellations, then save them to newly creates files
+This will fetch latest lesson plan and class cancellations, then save them to newly created files.
 
-> **NOTE:** wait around 10-15s for it to finish (it will quit immediately after first run)
+> **NOTE:** Wait around 10-15s for it to finish (it will quit immediately after first run).
 
 ```bash
 python3 main.py
 ```
 
 
-### 4. edit settings
+### 4. Edit settings
 
 ```bash
 nano config/user.json
@@ -122,17 +120,17 @@ nano config/user.json
 
 
 ```
-* loop_time_in_seconds - how much to wait in seconds between each loop (e.g., 900, 3600, 7200).
+* loop_time_in_seconds - how much to wait in seconds between each loop / refresh rate (e.g., 900, 3600, 7200).
 -> if set to 0 (default), then run only once, then quit.
 * send_email_cancel - should an e-mail be sent on class cancellations change (e.g., true; disable if spam).
 * send_email_plan - should an e-mail be sent on lesson plan change (e.g., true).
 * group_pattern - regex pattern used to find your lesson group (e.g., "^1.*LMT").
-* cancel - link to a list of class cancellations.
-* plan - link to a list of lesson plans for all groups.
+* cancel - website link to a list of class cancellations.
+* plan - website link to a list of lesson plans for all groups.
 ```
 
 
-### 5. edit credentials
+### 5. Edit credentials
 
 ```bash
 nano config/secret.json
@@ -147,32 +145,32 @@ nano config/secret.json
 * username - your e-mail address (e.g., "name.surname@example.mail.com").
 ```
 
-requires an e-mail with smtp support (throwaway at o2 works ig)
+Requires an e-mail with smtp support (a throwaway at o2 will do fine, I guess).
 
 
-### 6. create systemd service
+### 6. Create systemd service
 
->**NOTE:** the `ExecStartPre` adds a startup delay (40 seconds) to prevent the program from using the fallback user agent<br>if you use a different init system (or a cron job or a scheduled task) them make sure to add a delay of a similar length
+>**NOTE:** The `ExecStartPre` adds a startup delay (40 seconds) to prevent the program from using the fallback user agent.<br>If you use a different init system (or a cron job or a scheduled task) them make sure to add a delay of a similar length.
 
 ```bash
 cd /etc/systemd/system
 sudo nano wa_color.service
 ```
 
-enter username and path to wa_color dir here
+Enter username and path to `wa_color` directory inside the `wa_color.service` file.
 
 ```bash
 [Unit]
-Description=wa_color (python3)
+Description=wa_color (Python)
 
 Wants=network.target
 After=syslog.target network-online.target
 
 [Service]
-User=rin
-WorkingDirectory=/home/rin/wa_color
+User=scarlet
+WorkingDirectory=/home/scarlet/wa_color
 ExecStartPre=/bin/sleep 40
-ExecStart=python3 /home/rin/wa_color/main.py
+ExecStart=python3 /home/scarlet/wa_color/main.py
 Restart=on-failure
 RestartSec=300
 KillMode=mixed
@@ -183,53 +181,53 @@ WantedBy=multi-user.target
 ```
 
 
-### 7. run systemd service
+### 7. Run systemd service
 
 
-(I) autostart service on OS boot (e.g., after restart, power cut)
+(I) Autostart service on OS boot (e.g., after restart, power cut).
 ```bash
 sudo systemctl enable wa_color.service
 ```
 
-(II) start manually right now
+(II) Start manually right now.
 
->**NOTE:** the `ExecStartPre` adds a startup delay (40 seconds), which will make the shell unresponsive for 40 seconds before starting the program; since i rarely start it this way, i haven't bothered adding a delay in the program itself
+>**NOTE:** The `ExecStartPre` adds a startup delay (40 seconds), which will make the shell unresponsive for 40 seconds before starting the program; since I rarely start it this way, I haven't bothered adding a delay in the program itself (but I probably should).
 
 ```bash
 sudo systemctl start wa_color.service
 ```
 
-(III) check status
+(III) Check status
 ```bash
 systemctl status wa_color.service
 ```
 
-now it's gonna check the AMU website every X seconds (as specified in `./config/user.json`) and send e-mails
+Now it's going to check check the AMU website every X seconds (as specified in `./config/user.json`) and send e-mails.
 
 
 ---
 
 
-# problems
+# Issues
 
-if it fails to run, check if you have:
+If it fails to run, check if you have:
 
-* a) all the dependencies installed (requests, bs4)
-* b) activated the virtual environment (`source env/bin/activate`)
-* c) entered the correct paths in the systemd service (workdir, main.py)
-* d) tried running the command in systemd's `ExecStart` directly (e.g., `python3 /home/rin/wa_color/main.py`)
-* e) read/write permissions in the wa_color dir (`chmod +rw <directory>`)
+* a) all the dependencies installed (`requests`, `beautifulsoup4`).
+* b) activated the virtual environment (`source env/bin/activate`).
+* c) entered the correct paths in the systemd service (`WorkingDirectory` & `ExecStart`).
+* d) tried running the command in systemd's `ExecStart` directly (e.g., `python3 /home/scarlet/wa_color/main.py`).
+* e) read/write permissions in the wa_color dir (`chmod +rw <directory>`).
 
 
 ---
 
 
-# args
+# Arguments
 
-the program can take multiple commandline arguments
+The program can take multiple commandline arguments.
 
 
-a) verbose - enable verbose, debug-level logging, useful for debugging
+a) verbose - enable verbose, debug-level logging, useful for debugging.
 
 
 ```bash
@@ -237,7 +235,7 @@ python3 main.py --verbose
 ```
 
 
-b) html - create a html table of the current and previous lesson plan (for comparison), then save it in `./output.html`, then quit (no web scraper)
+b) html - create a HTML table of the current and previous lesson plan (for comparison), then save it in `./output.html`, then quit (no web scraper).
 
 
 ```bash
@@ -245,7 +243,7 @@ python3 main.py --html
 ```
 
 
-c) mail - send debug e-mail to all recipients in `./config/secret.json`, then quit (no web scraper)
+c) mail - send debug e-mail to all recipients in `./config/secret.json`, then quit (no web scraper).
 
 
 ```bash
@@ -253,7 +251,7 @@ python3 main.py --mail
 ```
 
 
-d) reset - re-create all directories from scratch, fetch all data, then quit (effectively equivalent to re-downloading the whole program and running it for the first time)
+d) reset - re-create all directories from scratch, fetch all data, then quit (effectively equivalent to re-downloading the whole program and running it for the first time).
 
 
 ```bash
