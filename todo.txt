@@ -1,0 +1,3 @@
+add startup delay before fetching user agent, with "--no_delay" flag to bypass it
+code with strict type checking and mypy
+add ":," separators to numbers that are printed
